@@ -4,5 +4,5 @@
 			"SkyDaisy9"
 		]
 	},
-	"contributionslist-desc": " 解析関数を用いて利用者の貢献一覧を作成"
+	"contributionslist-desc": " パーサー関数を用いて利用者の貢献一覧を生成します。"
 }
