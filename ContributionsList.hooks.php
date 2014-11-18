@@ -16,7 +16,7 @@ class ContributionsListHooks {
 	 */
 	public static function setupParserFunction( Parser &$parser ) {
 		$parser->setFunctionHook( 'contributionslist', __CLASS__ . '::contributionslistParserFunction',
-			SFH_OBJECT_ARGS );
+			Parser::SFH_OBJECT_ARGS );
 
 		return true;
 	}
