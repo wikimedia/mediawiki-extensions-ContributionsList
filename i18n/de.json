@@ -1,8 +1,9 @@
 {
 	"@metadata": {
 		"authors": [
-			"Metalhead64"
+			"Metalhead64",
+			"Purodha"
 		]
 	},
-	"contributionslist-desc": "Ergänzt eine Parserfunktion, mit der eine Liste mit Benutzerbeiträgen erzeugt werden kann"
+	"contributionslist-desc": "Fügt dem Wiki ein eine Parserfunktion hinzu, mit der eine Liste mit Benutzerbeiträgen erzeugt werden kann"
 }
