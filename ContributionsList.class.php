@@ -47,7 +47,7 @@ class ContributionsList extends ContextSource {
 	/**
 	 * A read-only database object
 	 *
-	 * @var DatabaseBase
+	 * @var \Wikimedia\Rdbms\IDatabase
 	 */
 	private $db;
 
