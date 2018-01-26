@@ -94,7 +94,7 @@ class ContributionsList extends ContextSource {
 			$this->setContext( $context );
 		}
 
-		$this->db = wfGetDB( DB_SLAVE, 'contributionslist' );
+		$this->db = wfGetDB( DB_REPLICA, 'contributionslist' );
 
 		$this->user = $user;
 
@@ -153,9 +153,9 @@ class ContributionsList extends ContextSource {
 		$info = $this->getQueryInfo();
 		$tables = $info['tables'];
 		$fields = $info['fields'];
-		$conds = isset( $info['conds'] ) ? $info['conds'] : array();
-		$options = isset( $info['options'] ) ? $info['options'] : array();
-		$join_conds = isset( $info['join_conds'] ) ? $info['join_conds'] : array();
+		$conds = isset( $info['conds'] ) ? $info['conds'] : [];
+		$options = isset( $info['options'] ) ? $info['options'] : [];
+		$join_conds = isset( $info['join_conds'] ) ? $info['join_conds'] : [];
 
 		$options['ORDER BY'] = $this->indexField . ' DESC';
 
@@ -168,7 +168,7 @@ class ContributionsList extends ContextSource {
 				'<=' . $this->db->addQuotes( $this->dateTo );
 		}
 
-		return array( $tables, $fields, $conds, $fname, $options, $join_conds );
+		return [ $tables, $fields, $conds, $fname, $options, $join_conds ];
 	}
 
 	/**
@@ -181,8 +181,8 @@ class ContributionsList extends ContextSource {
 
 		if ( $this->category instanceof Title ) {
 			$tables[] = 'categorylinks';
-			$conds = array_merge( $userCond, array( 'cl_to' => $this->category->getDBkey() ) );
-			$join_cond['categorylinks'] = array( 'INNER JOIN', 'cl_from = page_id' );
+			$conds = array_merge( $userCond, [ 'cl_to' => $this->category->getDBkey() ] );
+			$join_cond['categorylinks'] = [ 'INNER JOIN', 'cl_from = page_id' ];
 		} else {
 			$conds = $userCond;
 		}
@@ -201,21 +201,21 @@ class ContributionsList extends ContextSource {
 		# Get the current user name for accounts
 		$join_cond['user'] = RevisionStore::getQueryInfo( [ 'user' ] );
 
-		$options = array();
+		$options = [];
 		if ( $index ) {
-			$options['USE INDEX'] = array( 'revision' => $index );
+			$options['USE INDEX'] = [ 'revision' => $index ];
 		}
-		$queryInfo = array(
+		$queryInfo = [
 			'tables' => $tables,
 			'fields' => array_merge(
 				RevisionStore::getQueryInfo(), RevisionStore::getQueryInfo( [ 'user' ] ),
-				array( 'page_namespace', 'page_title', 'page_is_new',
-				'page_latest', 'page_is_redirect', 'page_len' )
+				[ 'page_namespace', 'page_title', 'page_is_new',
+				'page_latest', 'page_is_redirect', 'page_len' ]
 			),
 			'conds' => $conds,
 			'options' => $options,
 			'join_conds' => $join_cond
-		);
+		];
 
 		return $queryInfo;
 	}
@@ -226,9 +226,9 @@ class ContributionsList extends ContextSource {
 	 * @return array
 	 */
 	function getUserCond() {
-		$condition = array();
-		$join_conds = array();
-		$tables = array( 'revision', 'page', 'user' );
+		$condition = [];
+		$join_conds = [];
+		$tables = [ 'revision', 'page', 'user' ];
 		$index = false;
 
 		$uid = User::idFromName( $this->user );
@@ -246,7 +246,7 @@ class ContributionsList extends ContextSource {
 			$condition[] = 'rev_parent_id != 0';
 		}
 
-		return array( $tables, $index, $condition, $join_conds );
+		return [ $tables, $index, $condition, $join_conds ];
 	}
 
 	function getIndexField() {
@@ -263,7 +263,7 @@ class ContributionsList extends ContextSource {
 		get_class( $row );
 		wfProfileIn( __METHOD__ );
 
-		$classes = array();
+		$classes = [];
 
 		/*
 		 * There may be more than just revision rows. To make sure that we'll only be processing
@@ -275,20 +275,20 @@ class ContributionsList extends ContextSource {
 		wfSuppressWarnings();
 		try {
 			$rev = new Revision( $row );
-			$validRevision = (bool) $rev->getId();
+			$validRevision = (bool)$rev->getId();
 		} catch ( MWException $e ) {
 			$validRevision = false;
 		}
 		wfRestoreWarnings();
 
 		if ( $validRevision ) {
-			$classes = array();
+			$classes = [];
 
 			$page = Title::newFromRow( $row );
 			$link = Linker::link(
 					$page, htmlspecialchars( $page->getPrefixedText() ),
-					array( 'class' => 'contributionslist-title' ),
-					$page->isRedirect() ? array( 'redirect' => 'no' ) : array()
+					[ 'class' => 'contributionslist-title' ],
+					$page->isRedirect() ? [ 'redirect' => 'no' ] : []
 			);
 		}
 
@@ -307,7 +307,7 @@ class ContributionsList extends ContextSource {
 		if ( !in_array( strtolower( $format ), self::getValidFormats() ) ) {
 			$format = 'ul';
 		}
-		return call_user_func( array( $this, 'getContributionsList_' . $format ) );
+		return call_user_func( [ $this, 'getContributionsList_' . $format ] );
 	}
 
 	/**
@@ -316,7 +316,7 @@ class ContributionsList extends ContextSource {
 	 * @return array
 	 */
 	public static function getValidFormats() {
-		return array( 'ol', 'ul', 'plain' );
+		return [ 'ol', 'ul', 'plain' ];
 	}
 
 	/**
@@ -344,9 +344,9 @@ class ContributionsList extends ContextSource {
 	 * @return string HTML list
 	 */
 	public function getContributionsListList( $type ) {
-		$html = Html::openElement( $type, array( 'class' => 'contributionslist' ) );
+		$html = Html::openElement( $type, [ 'class' => 'contributionslist' ] );
 		while ( $row = $this->result->fetchObject() ) {
-			$html .= Html::rawElement( 'li', array(), $this->getLinkedTitle( $row ) );
+			$html .= Html::rawElement( 'li', [], $this->getLinkedTitle( $row ) );
 		}
 		$html .= Html::closeElement( $type );
 
@@ -359,7 +359,7 @@ class ContributionsList extends ContextSource {
 	 * @return string HTML plain list
 	 */
 	public function getContributionsList_plain() {
-		$links = array();
+		$links = [];
 		while ( $row = $this->result->fetchObject() ) {
 			$links[] = $this->getLinkedTitle( $row );
 		}

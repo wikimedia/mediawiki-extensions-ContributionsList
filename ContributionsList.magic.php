@@ -17,11 +17,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-$magicWords = array();
+$magicWords = [];
 
 /** English
  * @author Ike Hecht
  */
-$magicWords['en'] = array(
-	'contributionslist' => array( 0, 'contributionslist' ),
-);
+$magicWords['en'] = [
+	'contributionslist' => [ 0, 'contributionslist' ],
+];

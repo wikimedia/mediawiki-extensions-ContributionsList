@@ -23,7 +23,7 @@ class ContributionsListHooks {
 	 * Set up the #contributionslist parser function
 	 *
 	 * @param Parser $parser
-	 * @return boolean
+	 * @return bool
 	 */
 	public static function setupParserFunction( Parser &$parser ) {
 		$parser->setFunctionHook( 'contributionslist', __CLASS__ . '::contributionslistParserFunction',
@@ -57,7 +57,7 @@ class ContributionsListHooks {
 
 		$contributionsList = new ContributionsList( $user, $category, $type, $dateFrom, $dateTo );
 		$output = $contributionsList->getContributionsList( $format );
-		return array( $output, 'noparse' => true, 'isHTML' => true );
+		return [ $output, 'noparse' => true, 'isHTML' => true ];
 	}
 
 	/**
@@ -69,7 +69,7 @@ class ContributionsListHooks {
 	 * @return array
 	 */
 	public static function extractOptions( array $options, PPFrame $frame ) {
-		$results = array();
+		$results = [];
 
 		foreach ( $options as $option ) {
 			$pair = explode( '=', $frame->expand( $option ), 2 );
