@@ -1,13 +1,13 @@
 {
 	"name": "ContributionsList",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"author": "[https://www.mediawiki.org/wiki/User:Tosfos Ike Hecht]",
 	"url": "https://www.mediawiki.org/wiki/Extension:ContributionsList",
 	"descriptionmsg": "contributionslist-desc",
 	"license-name": "GPL-2.0-or-later",
 	"type": "other",
 	"requires": {
-		"MediaWiki": ">= 1.25.0"
+		"MediaWiki": ">= 1.31.0"
 	},
 	"MessagesDirs": {
 		"ContributionsList": [
