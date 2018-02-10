@@ -122,18 +122,12 @@ class ContributionsList extends ContextSource {
 	 * The query code is based on ContribsPager
 	 */
 	public function doQuery() {
-		# Use the child class name for profiling
-		$fname = __METHOD__ . ' (' . get_class( $this ) . ')';
-		wfProfileIn( $fname );
-
 		list( $tables, $fields, $conds, $fname, $options, $join_conds ) = $this->buildQueryInfo();
 		$this->result = $this->db->select(
 			$tables, $fields, $conds, $fname, $options, $join_conds
 		);
 
 		$this->result->rewind(); // Paranoia
-
-		wfProfileOut( $fname );
 	}
 
 	/**
@@ -261,7 +255,6 @@ class ContributionsList extends ContextSource {
 	 */
 	function getLinkedTitle( $row ) {
 		get_class( $row );
-		wfProfileIn( __METHOD__ );
 
 		$classes = [];
 
@@ -291,8 +284,6 @@ class ContributionsList extends ContextSource {
 					$page->isRedirect() ? [ 'redirect' => 'no' ] : []
 			);
 		}
-
-		wfProfileOut( __METHOD__ );
 
 		return $link;
 	}
