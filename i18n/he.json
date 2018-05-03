@@ -1,8 +1,9 @@
 {
 	"@metadata": {
 		"authors": [
-			"Yona b"
+			"Yona b",
+			"Guycn2"
 		]
 	},
-	"contributionslist-desc": "יוצר רשימת משתמשים המשתמשים בפונקציה מפרשת"
+	"contributionslist-desc": "יצירת רשימה של תרומות משתמשים באמצעות פונקציית מפענח"
 }
