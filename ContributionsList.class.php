@@ -82,11 +82,11 @@ class ContributionsList extends ContextSource {
 	 * Get all parameters required for the query
 	 *
 	 * @param string $user
-	 * @param string $category
-	 * @param string $type
-	 * @param string $dateFrom
-	 * @param string $dateTo
-	 * @param IContextSource $context
+	 * @param string|null $category
+	 * @param string|null $type
+	 * @param string|null $dateFrom
+	 * @param string|null $dateTo
+	 * @param IContextSource|null $context
 	 */
 	public function __construct( $user, $category = null, $type = null, $dateFrom = null,
 		$dateTo = null, IContextSource $context = null ) {
