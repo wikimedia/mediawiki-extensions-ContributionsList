@@ -265,14 +265,14 @@ class ContributionsList extends ContextSource {
 		 * we're definitely dealing with revision data and we may proceed, if not, we'll leave it
 		 * to extensions to subscribe to the hook to parse the row.
 		 */
-		wfSuppressWarnings();
+		Wikimedia\suppressWarnings();
 		try {
 			$rev = new Revision( $row );
 			$validRevision = (bool)$rev->getId();
 		} catch ( MWException $e ) {
 			$validRevision = false;
 		}
-		wfRestoreWarnings();
+		Wikimedia\restoreWarnings();
 
 		if ( $validRevision ) {
 			$classes = [];
