@@ -1,6 +1,6 @@
 {
 	"name": "ContributionsList",
-	"version": "0.3.0",
+	"version": "0.3.1",
 	"author": "[https://www.mediawiki.org/wiki/User:Tosfos Ike Hecht]",
 	"url": "https://www.mediawiki.org/wiki/Extension:ContributionsList",
 	"descriptionmsg": "contributionslist-desc",
