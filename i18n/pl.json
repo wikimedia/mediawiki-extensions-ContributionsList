@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Railfail536"
+			"Railfail536",
+			"Rail"
 		]
 	},
 	"contributionslist-desc": "Generuje listę edycji użytkownika przy użyciu funkcji parsera"
