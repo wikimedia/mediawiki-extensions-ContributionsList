@@ -18,8 +18,8 @@
 		"ContributionsListMagic": "ContributionsList.magic.php"
 	},
 	"AutoloadClasses": {
-		"ContributionsListHooks": "ContributionsList.hooks.php",
-		"ContributionsList": "ContributionsList.class.php"
+		"ContributionsListHooks": "includes/ContributionsListHooks.php",
+		"ContributionsList": "includes/ContributionsList.php"
 	},
 	"Hooks": {
 		"ParserFirstCallInit": "ContributionsListHooks::setupParserFunction"

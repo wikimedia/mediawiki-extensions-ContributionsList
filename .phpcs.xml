@@ -5,7 +5,6 @@
 		<exclude name="MediaWiki.Commenting.FunctionComment.MissingParamTag" />
 		<exclude name="MediaWiki.Commenting.FunctionComment.ParamNameNoMatch" />
 		<exclude name="MediaWiki.ControlStructures.AssignmentInControlStructures.AssignmentInControlStructures" />
-		<exclude name="MediaWiki.Files.ClassMatchesFilename.NotMatch" />
 		<exclude name="MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName" />
 		<exclude name="MediaWiki.WhiteSpace.SpaceBeforeSingleLineComment.NewLineComment" />
 		<exclude name="Squiz.Scope.MethodScope.Missing" />
