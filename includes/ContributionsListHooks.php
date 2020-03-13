@@ -23,13 +23,10 @@ class ContributionsListHooks {
 	 * Set up the #contributionslist parser function
 	 *
 	 * @param Parser $parser
-	 * @return bool
 	 */
-	public static function setupParserFunction( Parser &$parser ) {
+	public static function setupParserFunction( Parser $parser ) {
 		$parser->setFunctionHook( 'contributionslist', __CLASS__ . '::contributionslistParserFunction',
 			Parser::SFH_OBJECT_ARGS );
-
-		return true;
 	}
 
 	/**
@@ -45,7 +42,8 @@ class ContributionsListHooks {
 	 * @return string
 	 */
 	public static function contributionslistParserFunction(
-	Parser $parser, PPFrame $frame, array $args ) {
+		Parser $parser, PPFrame $frame, array $args
+	) {
 		$params = self::extractOptions( $args, $frame );
 
 		$user = isset( $params['user'] ) ? $params['user'] : '';
