@@ -336,7 +336,7 @@ class ContributionsList extends ContextSource {
 	 */
 	public function getContributionsListList( $type ) {
 		$html = Html::openElement( $type, [ 'class' => 'contributionslist' ] );
-		while ( $row = $this->result->fetchObject() ) {
+		foreach ( $this->result as $row ) {
 			$html .= Html::rawElement( 'li', [], $this->getLinkedTitle( $row ) );
 		}
 		$html .= Html::closeElement( $type );
@@ -351,7 +351,7 @@ class ContributionsList extends ContextSource {
 	 */
 	public function getContributionsList_plain() {
 		$links = [];
-		while ( $row = $this->result->fetchObject() ) {
+		foreach ( $this->result as $row ) {
 			$links[] = $this->getLinkedTitle( $row );
 		}
 		$lang = $this->getLanguage();
