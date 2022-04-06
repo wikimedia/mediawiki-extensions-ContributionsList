@@ -17,6 +17,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
+use Wikimedia\AtEase\AtEase;
+
 class ContributionsList extends ContextSource {
 	/**
 	 * Username of target
@@ -265,14 +268,14 @@ class ContributionsList extends ContextSource {
 		 * we're definitely dealing with revision data and we may proceed, if not, we'll leave it
 		 * to extensions to subscribe to the hook to parse the row.
 		 */
-		Wikimedia\suppressWarnings();
+		AtEase::suppressWarnings();
 		try {
 			$rev = new Revision( $row );
 			$validRevision = (bool)$rev->getId();
 		} catch ( MWException $e ) {
 			$validRevision = false;
 		}
-		Wikimedia\restoreWarnings();
+		AtEase::restoreWarnings();
 
 		if ( $validRevision ) {
 			$classes = [];
