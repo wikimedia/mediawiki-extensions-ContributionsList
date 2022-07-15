@@ -18,6 +18,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+use MediaWiki\MediaWikiServices;
 use Wikimedia\AtEase\AtEase;
 
 class ContributionsList extends ContextSource {
@@ -281,8 +282,9 @@ class ContributionsList extends ContextSource {
 			$classes = [];
 
 			$page = Title::newFromRow( $row );
-			$link = Linker::link(
-					$page, htmlspecialchars( $page->getPrefixedText() ),
+			$link = MediaWikiServices::getInstance()->getLinkRenderer()->makeLink(
+					$page,
+					$page->getPrefixedText(),
 					[ 'class' => 'contributionslist-title' ],
 					$page->isRedirect() ? [ 'redirect' => 'no' ] : []
 			);
