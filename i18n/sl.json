@@ -1,8 +1,9 @@
 {
 	"@metadata": {
 		"authors": [
+			"Eleassar",
 			"Janezdrilc"
 		]
 	},
-	"contributionslist-desc": "Izpiši seznam uporabnikovih prispevkov s pomočjo razčlenjevalnih funkcij."
+	"contributionslist-desc": "Z uporabo razčlenjevalne funkcije izpiše seznam uporabnikovih prispevkov."
 }
