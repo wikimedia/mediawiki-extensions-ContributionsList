@@ -229,7 +229,14 @@ class ContributionsList extends ContextSource {
 		$tables = [ 'revision', 'page', 'user' ];
 		$index = false;
 
-		$uid = User::idFromName( $this->user );
+		if ( method_exists( MediaWikiServices::class, 'getUserIdentityLookup' ) ) {
+			// MW 1.36+
+			$userIdentity = MediaWikiServices::getInstance()->getUserIdentityLookup()
+				->getUserIdentityByName( $this->user );
+			$uid = $userIdentity ? $userIdentity->getId() : null;
+		} else {
+			$uid = User::idFromName( $this->user );
+		}
 		if ( $uid ) {
 			$condition['rev_user'] = $uid;
 			$index = 'user_timestamp';
