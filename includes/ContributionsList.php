@@ -126,7 +126,7 @@ class ContributionsList extends ContextSource {
 	 * The query code is based on ContribsPager
 	 */
 	public function doQuery() {
-		list( $tables, $fields, $conds, $fname, $options, $join_conds ) = $this->buildQueryInfo();
+		[ $tables, $fields, $conds, $fname, $options, $join_conds ] = $this->buildQueryInfo();
 		$this->result = $this->db->select(
 			$tables, $fields, $conds, $fname, $options, $join_conds
 		);
@@ -175,7 +175,7 @@ class ContributionsList extends ContextSource {
 	 * @return array
 	 */
 	function getQueryInfo() {
-		list( $tables, $index, $userCond, $join_cond ) = $this->getUserCond();
+		[ $tables, $index, $userCond, $join_cond ] = $this->getUserCond();
 
 		if ( $this->category instanceof Title ) {
 			$tables[] = 'categorylinks';
