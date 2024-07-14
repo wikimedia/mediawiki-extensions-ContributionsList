@@ -19,6 +19,7 @@
  */
 
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Revision\RevisionRecord;
 use Wikimedia\AtEase\AtEase;
 
 class ContributionsList extends ContextSource {
@@ -98,7 +99,14 @@ class ContributionsList extends ContextSource {
 			$this->setContext( $context );
 		}
 
-		$this->db = wfGetDB( DB_REPLICA, 'contributionslist' );
+		$services = MediaWikiServices::getInstance();
+		if ( method_exists( $services, 'getConnectionProvider' ) ) {
+			// MW 1.4x+?
+			$this->db = $services->getConnectionProvider()->getReplicaDatabase( false, 'contributionslist' );
+		} else {
+			// MW 1.39
+			$this->db = $services->getDBLoadBalancer()->getConnection( DB_REPLICA, 'contributionslist' );
+		}
 
 		$this->user = $user;
 
@@ -115,7 +123,7 @@ class ContributionsList extends ContextSource {
 		}
 		if ( $dateTo ) {
 			// We want the end of the $dateTo, not the beginning.
-			$this->dateTo = wfTimestamp( TS_MW, strtotime( "tomorrow", strtotime( $dateTo ) ) - 1 );
+			$this->dateTo = wfTimestamp( TS_MW, strtotime( 'tomorrow', strtotime( $dateTo ) ) - 1 );
 		}
 
 		$this->doQuery();
@@ -158,12 +166,10 @@ class ContributionsList extends ContextSource {
 		$options['ORDER BY'] = $this->indexField . ' DESC';
 
 		if ( $this->dateFrom ) {
-			$conds[] = $this->indexField .
-				'>=' . $this->db->addQuotes( $this->dateFrom );
+			$conds[] = $this->indexField . '>=' . $this->db->addQuotes( $this->dateFrom );
 		}
 		if ( $this->dateTo ) {
-			$conds[] = $this->indexField .
-				'<=' . $this->db->addQuotes( $this->dateTo );
+			$conds[] = $this->indexField . '<=' . $this->db->addQuotes( $this->dateTo );
 		}
 
 		return [ $tables, $fields, $conds, $fname, $options, $join_conds ];
@@ -188,31 +194,34 @@ class ContributionsList extends ContextSource {
 		$user = $this->getUser();
 		// Paranoia: avoid brute force searches (bug 17342)
 		if ( !$user->isAllowed( 'deletedhistory' ) ) {
-			$conds[] = $this->db->bitAnd( 'rev_deleted', Revision::DELETED_USER ) . ' = 0';
+			$conds[] = $this->db->bitAnd( 'rev_deleted', RevisionRecord::DELETED_USER ) . ' = 0';
 		} elseif ( !$user->isAllowed( 'suppressrevision' ) ) {
-			$conds[] = $this->db->bitAnd( 'rev_deleted', Revision::SUPPRESSED_USER ) .
-				' != ' . Revision::SUPPRESSED_USER;
+			$conds[] = $this->db->bitAnd( 'rev_deleted', RevisionRecord::SUPPRESSED_USER ) .
+				' != ' . RevisionRecord::SUPPRESSED_USER;
 		}
 
-		# Don't include orphaned revisions
-		$join_cond['page'] = RevisionStore::getQueryInfo( [ 'page' ] );
-		# Get the current user name for accounts
-		$join_cond['user'] = RevisionStore::getQueryInfo( [ 'user' ] );
+		$revisionStore = MediaWikiServices::getInstance()->getRevisionStore();
+		$pageQuery = $revisionStore->getQueryInfo( [ 'page' ] );
+		$userQuery = $revisionStore->getQueryInfo( [ 'user' ] );
 
 		$options = [];
 		if ( $index ) {
 			$options['USE INDEX'] = [ 'revision' => $index ];
 		}
+
 		$queryInfo = [
-			'tables' => $tables,
+			// The ordering is VERY precise and the use of the plus operator is intentional!
+			'tables' => $pageQuery['tables'] + $tables + $userQuery['tables'],
 			'fields' => array_merge(
-				RevisionStore::getQueryInfo(), RevisionStore::getQueryInfo( [ 'user' ] ),
-				[ 'page_namespace', 'page_title', 'page_is_new',
-				'page_latest', 'page_is_redirect', 'page_len' ]
+				$revisionStore->getQueryInfo()['fields'], $userQuery['fields'],
+				[
+					'page_namespace', 'page_title', 'page_is_new', 'page_id',
+					'page_latest', 'page_is_redirect', 'page_len'
+				]
 			),
 			'conds' => $conds,
 			'options' => $options,
-			'join_conds' => $join_cond
+			'join_conds' => array_merge( $join_cond, $pageQuery['joins'], $userQuery['joins'] )
 		];
 
 		return $queryInfo;
@@ -229,20 +238,17 @@ class ContributionsList extends ContextSource {
 		$tables = [ 'revision', 'page', 'user' ];
 		$index = false;
 
-		if ( method_exists( MediaWikiServices::class, 'getUserIdentityLookup' ) ) {
-			// MW 1.36+
-			$userIdentity = MediaWikiServices::getInstance()->getUserIdentityLookup()
-				->getUserIdentityByName( $this->user );
-			$uid = $userIdentity ? $userIdentity->getId() : null;
+		$services = MediaWikiServices::getInstance();
+		$userIdentity = $services->getUserIdentityLookup()->getUserIdentityByName( $this->user );
+		// $actorId = $userIdentity ? $userIdentity->getActorId() : null; // E_DEPRECATED
+		$actorId = $userIdentity ? $services->getActorNormalization()->findActorId( $userIdentity, $this->db ) : null;
+
+		if ( $actorId ) {
+			$condition['rev_actor'] = $actorId;
+			// $index = 'user_timestamp';
 		} else {
-			$uid = User::idFromName( $this->user );
-		}
-		if ( $uid ) {
-			$condition['rev_user'] = $uid;
-			$index = 'user_timestamp';
-		} else {
-			$condition['rev_user_text'] = $this->user;
-			$index = 'usertext_timestamp';
+			// $condition['rev_user_text'] = $this->user;
+			// $index = 'usertext_timestamp';
 		}
 
 		if ( $this->type == 'createonly' ) {
@@ -268,6 +274,7 @@ class ContributionsList extends ContextSource {
 		get_class( $row );
 
 		$classes = [];
+		$services = MediaWikiServices::getInstance();
 
 		/*
 		 * There may be more than just revision rows. To make sure that we'll only be processing
@@ -278,8 +285,15 @@ class ContributionsList extends ContextSource {
 		 */
 		AtEase::suppressWarnings();
 		try {
-			$rev = new Revision( $row );
-			$validRevision = (bool)$rev->getId();
+			$lookupService = $services->getRevisionLookup();
+			$currentRevision = $lookupService->getRevisionByPageId( $row->page_id );
+
+			if ( !$currentRevision ) {
+				// ?!?
+				$validRevision = false;
+			} else {
+				$validRevision = (bool)$currentRevision->getId();
+			}
 		} catch ( MWException $e ) {
 			$validRevision = false;
 		}
@@ -289,11 +303,11 @@ class ContributionsList extends ContextSource {
 			$classes = [];
 
 			$page = Title::newFromRow( $row );
-			$link = MediaWikiServices::getInstance()->getLinkRenderer()->makeLink(
-					$page,
-					$page->getPrefixedText(),
-					[ 'class' => 'contributionslist-title' ],
-					$page->isRedirect() ? [ 'redirect' => 'no' ] : []
+			$link = $services->getLinkRenderer()->makeLink(
+				$page,
+				$page->getPrefixedText(),
+				[ 'class' => 'contributionslist-title' ],
+				$page->isRedirect() ? [ 'redirect' => 'no' ] : []
 			);
 		}
 
