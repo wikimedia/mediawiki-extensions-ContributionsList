@@ -94,7 +94,7 @@ class ContributionsList extends ContextSource {
 	 * @param IContextSource|null $context
 	 */
 	public function __construct( $user, $category = null, $type = null, $dateFrom = null,
-		$dateTo = null, IContextSource $context = null ) {
+		$dateTo = null, ?IContextSource $context = null ) {
 		if ( $context ) {
 			$this->setContext( $context );
 		}
