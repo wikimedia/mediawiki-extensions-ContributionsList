@@ -1,8 +1,9 @@
 {
 	"@metadata": {
 		"authors": [
-			"JeffreyKim"
+			"JeffreyKim",
+			"Ktchankt"
 		]
 	},
-	"contributionslist-desc": "使用解析器函數生成使用者貢獻清單"
+	"contributionslist-desc": "用解析器函數生成用戶貢獻清單"
 }
