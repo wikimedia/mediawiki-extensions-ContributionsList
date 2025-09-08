@@ -30,7 +30,6 @@ class ContributionsListHooks {
 	}
 
 	/**
-	 *
 	 * The parser function is called with the form:
 	 * {{#contributionslist:
 	 *    user=username | category=categoryname | type=createonly/notcreate/all |
