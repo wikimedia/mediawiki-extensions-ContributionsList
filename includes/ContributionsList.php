@@ -22,7 +22,6 @@ use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Title\Title;
-use Wikimedia\AtEase\AtEase;
 
 class ContributionsList extends ContextSource {
 	/**
@@ -278,17 +277,9 @@ class ContributionsList extends ContextSource {
 		$classes = [];
 		$services = MediaWikiServices::getInstance();
 
-		/*
-		 * There may be more than just revision rows. To make sure that we'll only be processing
-		 * revisions here, let's _try_ to build a revision out of our row (without displaying
-		 * notices though) and then trying to grab data from the built object. If we succeed,
-		 * we're definitely dealing with revision data and we may proceed, if not, we'll leave it
-		 * to extensions to subscribe to the hook to parse the row.
-		 */
-		AtEase::suppressWarnings();
 		try {
 			$lookupService = $services->getRevisionLookup();
-			$currentRevision = $lookupService->getRevisionByPageId( $row->page_id );
+			$currentRevision = isset( $row->page_id ) ? $lookupService->getRevisionByPageId( $row->page_id ) : null;
 
 			if ( !$currentRevision ) {
 				// ?!?
@@ -299,7 +290,6 @@ class ContributionsList extends ContextSource {
 		} catch ( MWException $e ) {
 			$validRevision = false;
 		}
-		AtEase::restoreWarnings();
 
 		if ( $validRevision ) {
 			$classes = [];
