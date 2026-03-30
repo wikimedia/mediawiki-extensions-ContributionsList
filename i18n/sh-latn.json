@@ -1,8 +1,9 @@
 {
 	"@metadata": {
 		"authors": [
+			"Aca",
 			"Winston Sung"
 		]
 	},
-	"contributionslist-desc": "Generiše spisak korisničkih doprinosa koristeći parsersku funkciju"
+	"contributionslist-desc": "Generiše listu korisničkih doprinosa koristeći parsersku funkciju"
 }
